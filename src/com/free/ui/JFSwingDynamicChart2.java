@@ -161,7 +161,7 @@ public class JFSwingDynamicChart2 extends JFrame implements ActionListener {
 
 	// 主函数入口
 	public static void main(String[] args) {
-		JFSwingDynamicChart jsdChart = new JFSwingDynamicChart();
+		JFSwingDynamicChart_cpu jsdChart = new JFSwingDynamicChart_cpu();
 		jsdChart.setTitle("Swing动态折线图");
 		jsdChart.createUI();
 		jsdChart.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

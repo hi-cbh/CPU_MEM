@@ -200,7 +200,7 @@ public class PrintCPUAndMen {
 			
 			String str1 = stringBuffer.toString();
 			str1 = str1.trim();
-			System.out.println("str1:" + str1);
+			//System.out.println("str1:" + str1);
 			String[] s = str1.split("\\s+"); str1.split("\\s+"); // 以空格分隔
 
 			CPU = s[2];
@@ -486,7 +486,7 @@ public class PrintCPUAndMen {
 				str2 = str2.trim();
 				Heap = Double.parseDouble(str2);
 				// System.out.println("Heap:"+Heap);
-				Thread.sleep(1000);
+				//Thread.sleep(100);
 			} catch (InterruptedException e) {
 				System.err.println(e);
 			} finally {

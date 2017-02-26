@@ -5,7 +5,6 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.text.DecimalFormat;
 
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
@@ -28,39 +27,23 @@ import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.ui.RectangleInsets;
 
-public class JFSwingDynamicChart3 extends JFrame implements ActionListener {
+public class JFSwingDynamicChart_cpu extends JFrame implements ActionListener {
 	private TimeSeries series;
-	private TimeSeries series2;
-	private TimeSeries series3;
 	private double lastValue = 0.0;
-	private static final double MaxValue = 300.0;  //显示数据轴最大值
-	private static final double MIxValue = 0.0;    //显示数据轴最小值
-	private static double heapgrowthlimit = 0.0; //查看单个应用程序最大内存限制
 	
 	/**
 	 * 构造
 	 */
-	public JFSwingDynamicChart3() {
+	public JFSwingDynamicChart_cpu() {
 		getContentPane().setBackground(Color.green);
-		
-		//heapgrowthlimit = PrintCPUAndMen.getHeapgrowthlimit()/1024;
-		
 	}
 
 	/**
 	 * 创建应用程序界面
 	 */
-	@SuppressWarnings("deprecation")
 	public void createUI() {
-		this.series = new TimeSeries("PrivateDirty", Millisecond.class);
-		//this.series2 = new TimeSeries("heapgrowthlimit", Millisecond.class);
-		//this.series3 = new TimeSeries("Dalvik Head Size", Millisecond.class);
-		
-		TimeSeriesCollection dataset = new TimeSeriesCollection();
-		dataset.addSeries(this.series);
-		//dataset.addSeries(this.series2);
-		//dataset.addSeries(this.series3);
-
+		this.series = new TimeSeries("CPU", Millisecond.class);
+		TimeSeriesCollection dataset = new TimeSeriesCollection(this.series);
 		ChartPanel chartPanel = new ChartPanel(createChart(dataset));
 		chartPanel.setPreferredSize(new java.awt.Dimension(500, 270));
 
@@ -84,7 +67,7 @@ public class JFSwingDynamicChart3 extends JFrame implements ActionListener {
 		result.setBackgroundPaint(Color.white);
 		// 边框可见
 		result.setBorderVisible(true);
-		TextTitle title = new TextTitle("内存(M)时间序列图", new Font("宋体", Font.BOLD, 20));
+		TextTitle title = new TextTitle("CPU(%)时间序列图", new Font("宋体", Font.BOLD, 20));
 		// 解决曲线图片标题中文乱码问题
 		result.setTitle(title);
 		//解决图表底部中文乱码问题
@@ -114,7 +97,7 @@ public class JFSwingDynamicChart3 extends JFrame implements ActionListener {
 		//数据轴固定数据范围
 		axis = plot.getRangeAxis();
 		//设置是否显示数据轴
-		axis.setRange(MIxValue, MaxValue);
+		axis.setRange(0.0, 100.0);
 
 		// Y轴
 		NumberAxis numberaxis = (NumberAxis) plot.getRangeAxis();
@@ -178,26 +161,16 @@ public class JFSwingDynamicChart3 extends JFrame implements ActionListener {
 	 */
 	public void dynamicRun() {
 		while (true) {
-			double men = PrintCPUAndMen.getMemoryPrivateDirty("cn.cj.pe");
-
-			DecimalFormat df = new DecimalFormat("#");
-			String memory = df.format(men/1024);
-			System.out.println(memory);
-			double factor = Double.parseDouble(memory);
+			//double factor = 0.90 + 0.2 * Math.random();
+			String cpu = PrintCPUAndMen.getCPU("cn.cj.pe");
+			String s[] = cpu.split("%");
+			
+			double factor = Double.parseDouble(s[0]);
 			//System.out.println("factor:" +factor);
 			this.lastValue = factor;
 			//System.out.println("this.lastValue:" +this.lastValue);
-			
-			//double currentDalvik = PrintCPUAndMen.getCurrentDalvikHeadSize("cn.cj.pe")/1024;
-			
-			
-			
 			//Millisecond now = new Millisecond();
 			this.series.add(new Millisecond(), this.lastValue);
-			///this.series2.add(new Millisecond(), heapgrowthlimit);
-			
-			//this.series3.add(new Millisecond(), currentDalvik);
-			
 			try {
 				Thread.currentThread();
 				Thread.sleep(500);
@@ -209,8 +182,7 @@ public class JFSwingDynamicChart3 extends JFrame implements ActionListener {
 
 	// 主函数入口
 	public static void main(String[] args) {
-	
-		JFSwingDynamicChart3 jsdChart = new JFSwingDynamicChart3();
+		JFSwingDynamicChart_cpu jsdChart = new JFSwingDynamicChart_cpu();
 		jsdChart.setTitle("Swing动态折线图");
 		jsdChart.createUI();
 		jsdChart.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
