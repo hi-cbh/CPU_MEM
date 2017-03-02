@@ -28,7 +28,9 @@ import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.ui.RectangleInsets;
 
-public class JFSwingDynamicChart3_mem extends JFrame implements ActionListener {
+import com.until.info.PrintCPUAndMen;
+
+public class JFSwingDynamicChart_mem extends JFrame implements ActionListener {
 	private TimeSeries series;
 	private TimeSeries series2;
 	private TimeSeries series3;
@@ -40,10 +42,10 @@ public class JFSwingDynamicChart3_mem extends JFrame implements ActionListener {
 	/**
 	 * 构造
 	 */
-	public JFSwingDynamicChart3_mem() {
+	public JFSwingDynamicChart_mem() {
 		getContentPane().setBackground(Color.green);
 		
-		//heapgrowthlimit = PrintCPUAndMen.getHeapgrowthlimit()/1024;
+		heapgrowthlimit = PrintCPUAndMen.getHeapgrowthlimit()/1024;
 		
 	}
 
@@ -53,13 +55,13 @@ public class JFSwingDynamicChart3_mem extends JFrame implements ActionListener {
 	@SuppressWarnings("deprecation")
 	public void createUI() {
 		this.series = new TimeSeries("PrivateDirty", Millisecond.class);
-		//this.series2 = new TimeSeries("heapgrowthlimit", Millisecond.class);
-		//this.series3 = new TimeSeries("Dalvik Head Size", Millisecond.class);
+		this.series2 = new TimeSeries("heapgrowthlimit", Millisecond.class);
+		this.series3 = new TimeSeries("Dalvik Head Size", Millisecond.class);
 		
 		TimeSeriesCollection dataset = new TimeSeriesCollection();
 		dataset.addSeries(this.series);
-		//dataset.addSeries(this.series2);
-		//dataset.addSeries(this.series3);
+		dataset.addSeries(this.series2);
+		dataset.addSeries(this.series3);
 
 		ChartPanel chartPanel = new ChartPanel(createChart(dataset));
 		chartPanel.setPreferredSize(new java.awt.Dimension(500, 270));
@@ -110,7 +112,7 @@ public class JFSwingDynamicChart3_mem extends JFrame implements ActionListener {
 		//自动设置数据轴数据范围
 		axis.setAutoRange(true);
 		//设置时间轴显示的数据
-		axis.setFixedAutoRange(60000D);
+		axis.setFixedAutoRange(20000D);
 		//数据轴固定数据范围
 		axis = plot.getRangeAxis();
 		//设置是否显示数据轴
@@ -188,15 +190,12 @@ public class JFSwingDynamicChart3_mem extends JFrame implements ActionListener {
 			this.lastValue = factor;
 			//System.out.println("this.lastValue:" +this.lastValue);
 			
-			//double currentDalvik = PrintCPUAndMen.getCurrentDalvikHeadSize("cn.cj.pe")/1024;
-			
-			
-			
+			double currentDalvik = Double.parseDouble(df.format(PrintCPUAndMen.getCurrentDalvikHeadSize("cn.cj.pe")/1024));
+			System.out.println("currentDalvik" + currentDalvik);
 			//Millisecond now = new Millisecond();
 			this.series.add(new Millisecond(), this.lastValue);
-			///this.series2.add(new Millisecond(), heapgrowthlimit);
-			
-			//this.series3.add(new Millisecond(), currentDalvik);
+			this.series2.add(new Millisecond(), heapgrowthlimit);
+			this.series3.add(new Millisecond(), currentDalvik);
 			
 			try {
 				Thread.currentThread();
@@ -210,7 +209,7 @@ public class JFSwingDynamicChart3_mem extends JFrame implements ActionListener {
 	// 主函数入口
 	public static void main(String[] args) {
 	
-		JFSwingDynamicChart3_mem jsdChart = new JFSwingDynamicChart3_mem();
+		JFSwingDynamicChart_mem jsdChart = new JFSwingDynamicChart_mem();
 		jsdChart.setTitle("Swing动态折线图");
 		jsdChart.createUI();
 		jsdChart.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

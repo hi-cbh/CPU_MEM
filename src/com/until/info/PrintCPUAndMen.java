@@ -1,4 +1,4 @@
-package com.free.ui;
+package com.until.info;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -29,32 +29,21 @@ public class PrintCPUAndMen {
 	 **/
 
 	public static void main(String[] args) {
-		//System.out.println("getCPU: " + getCPU("cn.cj.pe"));
-		String cpu = getCPU("cn.cj.pe");
-		System.out.println("cpu:" + cpu);
-		String[] s = cpu.split("%");
-		
-		System.out.println("CPU:" + s[0]);
-		
-//		// System.out.println("Memory result: " + getMemoryPSS("cn.cj.pe"));
-//		
-//		
-//		
-//		System.out.println("getHeapsizeMax: " + getHeapsizeMax());
-//
-//		System.out.println("getHeapgrowthlimit: " + getHeapgrowthlimit());
-//		System.out.println("getCurrentDalvikHeadSize: "
-//				+ getCurrentDalvikHeadSize("cn.cj.pe"));
-//
-//		System.out.println("getMemoryPSS: " + getMemoryPSS("cn.cj.pe"));
+		// System.out.println("getCPU: " + getCPU("cn.cj.pe"));
 
-//
-//		List<String> tls = getMemory("cn.cj.pe");
-//		System.out.println("getMemory 0:" + tls.get(0));
-//		System.out.println("getMemory 1:" + tls.get(1));
-//
-//		System.out.println("getCurrentDalvikHeadSize: "
-//				+ getCurrentDalvikHeadSize("cn.cj.pe"));
+		for(int i = 0; i < 20; i++){
+			System.out.println("Flow:" + GetFlow("cn.cj.pe","eth0"));
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		
+
+
 	}
 
 	/**
@@ -106,11 +95,11 @@ public class PrintCPUAndMen {
 				stringBuffer.append(line + " ");
 
 			}
-			String str1 = stringBuffer.toString();
+			String str1 = stringBuffer.toString().trim();
 			String[] s = str1.split("\\s+"); // 以空格分隔
 
 			PID = s[1];
-			System.out.println("PID:" + PID);
+			//System.out.println("PID:" + PID);
 			PID = PID.trim();
 
 			return PID;
@@ -145,7 +134,7 @@ public class PrintCPUAndMen {
 				stringBuffer.append(line + " ");
 
 			}
-			String str1 = stringBuffer.toString();
+			String str1 = stringBuffer.toString().trim();
 			String[] s = str1.split("\\s+"); // 以空格分隔
 			System.out.println("s[0]=" + s[0]);
 			System.out.println("s[1]=" + s[1]);
@@ -184,7 +173,8 @@ public class PrintCPUAndMen {
 
 		try {
 			Runtime runtime = Runtime.getRuntime();
-			proc = runtime.exec("adb shell top -n 1 -d 0.5 | grep " + PackageName);
+			proc = runtime.exec("adb shell top -n 1 -d 0.5 | grep "
+					+ PackageName);
 
 			if (proc.waitFor() != 0) {
 				System.err.println("exit value = " + proc.exitValue());
@@ -197,20 +187,21 @@ public class PrintCPUAndMen {
 				stringBuffer.append(line + " ");
 
 			}
-			
+
 			String str1 = stringBuffer.toString();
 			str1 = str1.trim();
-			//System.out.println("str1:" + str1);
-			String[] s = str1.split("\\s+"); str1.split("\\s+"); // 以空格分隔
+			// System.out.println("str1:" + str1);
+			String[] s = str1.split("\\s+");
+			str1.split("\\s+"); // 以空格分隔
 
 			CPU = s[2];
-			//System.out.println("PID:" + CPU);
+			// System.out.println("PID:" + CPU);
 			CPU = CPU.trim();
 
 			return CPU;
 		} catch (Exception e) {
-			CPU =  "-1";
-			//System.err.println(e);
+			CPU = "-1";
+			// System.err.println(e);
 		} finally {
 			try {
 				proc.destroy();
@@ -375,14 +366,14 @@ public class PrintCPUAndMen {
 
 				}
 
-				String str1 = stringBuffer.toString();
+				String str1 = stringBuffer.toString().trim();
 				// System.out.println("str1:"+str1);
 				String[] s = str1.split("\\s+");
-				String str2 = s[7];
+				String str2 = s[6];
 
 				str2 = str2.trim();
 				Heap = Double.parseDouble(str2);
-
+				System.out.println("Heap" + Heap);
 			} catch (InterruptedException e) {
 				System.err.println(e);
 			} finally {
@@ -486,9 +477,11 @@ public class PrintCPUAndMen {
 				str2 = str2.trim();
 				Heap = Double.parseDouble(str2);
 				// System.out.println("Heap:"+Heap);
-				//Thread.sleep(100);
+				// Thread.sleep(100);
 			} catch (InterruptedException e) {
+				
 				System.err.println(e);
+				return -1;
 			} finally {
 				try {
 					proc.destroy();
@@ -499,7 +492,7 @@ public class PrintCPUAndMen {
 
 		catch (Exception StringIndexOutOfBoundsException) {
 			System.out.print("请检查设备是否连接");
-
+			return -1;
 		}
 		return Heap;
 	}
@@ -562,4 +555,195 @@ public class PrintCPUAndMen {
 		return ls;
 	}
 
+	/**
+	 * wifi下载流量
+	 * @param PackageName
+	 * @return
+	 */
+	public static double GetDownFlow(String PackageName) {
+		double str3 = 0;
+		String Pid = getPID(PackageName);
+		if(Pid.equals("")){
+			return 0.0;
+		}
+		
+		
+		try {
+			Runtime runtime = Runtime.getRuntime();
+			/* Process proc2 = runtime.exec(""); */
+			Process proc = runtime.exec("adb shell cat /proc/" + Pid
+					+ "/net/dev");
+			try {
+				if (proc.waitFor() != 0) {
+					System.err.println("exit value = " + proc.exitValue());
+					// JOptionPane.showMessageDialog(new JFrame(),
+					// "哥们抱歉，好像出问题了！关掉重试吧！");
+				}
+				BufferedReader in = new BufferedReader(new InputStreamReader(
+						proc.getInputStream()));
+				StringBuffer stringBuffer = new StringBuffer();
+				String line = null;
+				while ((line = in.readLine()) != null) {
+					stringBuffer.append(line + " ");
+				}
+
+				String str1 = stringBuffer.toString();
+				String str2 = str1.substring(str1.indexOf("wlan0:"),
+						str1.indexOf("wlan0:") + 90);
+				
+				
+				
+				// 接收字节：
+				String str4 = str2.substring(7, 16);
+				str4 = str4.trim();
+				int b = Integer.parseInt(str4);
+				str3 = b / 1024;
+				// System.out.println(str3);
+			} catch (InterruptedException e) {
+				System.err.println(e);
+			} finally {
+				try {
+					proc.destroy();
+				} catch (Exception e2) {
+				}
+			}
+		} catch (Exception StringIndexOutOfBoundsException) {
+			System.out.print("请检查设备是否连接");
+
+		}
+		return str3;
+	}
+
+	/**
+	 * wifi下载流量
+	 * @param PackageName
+	 * @return
+	 */
+	public static String GetFlow(String PackageName) {
+		String str3 = "";
+		String Pid = getPID(PackageName);
+		if(Pid.equals("")){
+			return "";
+		}
+		
+		
+		try {
+			Runtime runtime = Runtime.getRuntime();
+			/* Process proc2 = runtime.exec(""); */
+			Process proc = runtime.exec("adb shell cat /proc/" + Pid
+					+ "/net/dev | grep wlan0");
+			try {
+				if (proc.waitFor() != 0) {
+					System.err.println("exit value = " + proc.exitValue());
+					// JOptionPane.showMessageDialog(new JFrame(),
+					// "哥们抱歉，好像出问题了！关掉重试吧！");
+				}
+				BufferedReader in = new BufferedReader(new InputStreamReader(
+						proc.getInputStream()));
+				StringBuffer stringBuffer = new StringBuffer();
+				String line = null;
+				while ((line = in.readLine()) != null) {
+					stringBuffer.append(line + " ");
+				}
+
+				String str1 = stringBuffer.toString().trim();
+				
+				System.out.println(str1);
+				
+				
+				String[] s = str1.split("\\s+");
+				
+				String down = s[1];
+				String up = s[9];
+				
+				//System.out.println("down:" + down);
+				//System.out.println("up:" + up);
+				str3 = down + "#"+up;
+				
+//				String str2 = str1.substring(str1.indexOf("wlan0:"),
+//						str1.indexOf("wlan0:") + 90);
+//				
+//				
+//				
+//				// 接收字节：
+//				String str4 = str2.substring(7, 16);
+//				str4 = str4.trim();
+//				int b = Integer.parseInt(str4);
+//				str3 = b / 1024;
+//				// System.out.println(str3);
+			} catch (InterruptedException e) {
+				System.err.println(e);
+			} finally {
+				try {
+					proc.destroy();
+				} catch (Exception e2) {
+				}
+			}
+		} catch (Exception StringIndexOutOfBoundsException) {
+			System.out.print("请检查设备是否连接");
+
+		}
+		return str3;
+	}
+	/**
+	 * 不同手机、Wifi、4G dev都不一样；eth0,eth1;w
+	 * @param PackageName
+	 * @return
+	 */
+	public static String GetFlow(String PackageName, String dev) {
+		String str3 = "";
+		String Pid = getPID(PackageName);
+		if(Pid.equals("")){
+			return "";
+		}
+		
+		
+		try {
+			Runtime runtime = Runtime.getRuntime();
+			/* Process proc2 = runtime.exec(""); */
+			Process proc = runtime.exec("adb shell cat /proc/" + Pid
+					+ "/net/dev | grep " + dev);
+			try {
+				if (proc.waitFor() != 0) {
+					System.err.println("exit value = " + proc.exitValue());
+					// JOptionPane.showMessageDialog(new JFrame(),
+					// "哥们抱歉，好像出问题了！关掉重试吧！");
+				}
+				BufferedReader in = new BufferedReader(new InputStreamReader(
+						proc.getInputStream()));
+				StringBuffer stringBuffer = new StringBuffer();
+				String line = null;
+				while ((line = in.readLine()) != null) {
+					stringBuffer.append(line + " ");
+				}
+
+				String str1 = stringBuffer.toString().trim();
+				
+				System.out.println(str1);
+				
+				
+				String[] s = str1.split("\\s+");
+				
+				String down = s[1];
+				String up = s[9];
+				
+				//System.out.println("down:" + down);
+				//System.out.println("up:" + up);
+				str3 = down + "#"+up;
+				
+			} catch (InterruptedException e) {
+				System.err.println(e);
+			} finally {
+				try {
+					proc.destroy();
+				} catch (Exception e2) {
+				}
+			}
+		} catch (Exception StringIndexOutOfBoundsException) {
+			System.out.print("请检查设备是否连接");
+
+		}
+		return str3;
+	}
+	
 }

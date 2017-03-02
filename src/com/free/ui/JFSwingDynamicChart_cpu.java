@@ -27,6 +27,8 @@ import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.ui.RectangleInsets;
 
+import com.until.info.PrintCPUAndMen;
+
 public class JFSwingDynamicChart_cpu extends JFrame implements ActionListener {
 	private TimeSeries series;
 	private double lastValue = 0.0;

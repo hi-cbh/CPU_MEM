@@ -2,17 +2,14 @@ package com.free.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.BorderFactory;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
@@ -33,22 +30,23 @@ import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.ui.RectangleInsets;
 
-public class JFSwingDynamicChart4 extends JFrame implements ActionListener {
+import com.until.info.PrintCPUAndMen;
+
+public class JFSwingDynamicChart_flow extends JFrame implements ActionListener {
 	private TimeSeries series;
 	private TimeSeries series2;
 	private TimeSeries series3;
 	private double lastValue = 0.0;
-	private static final double MaxValue = 300.0;  //显示数据轴最大值
+	private static final double MaxValue = 500000.0;  //显示数据轴最大值
 	private static final double MIxValue = 0.0;    //显示数据轴最小值
 	private static double heapgrowthlimit = 0.0; //查看单个应用程序最大内存限制
 	
 	/**
 	 * 构造
 	 */
-	public JFSwingDynamicChart4() {
+	public JFSwingDynamicChart_flow() {
 		getContentPane().setBackground(Color.green);
-		
-		//heapgrowthlimit = PrintCPUAndMen.getHeapgrowthlimit()/1024;
+	
 		
 	}
 
@@ -57,19 +55,22 @@ public class JFSwingDynamicChart4 extends JFrame implements ActionListener {
 	 */
 	@SuppressWarnings("deprecation")
 	public void createUI() {
-		this.series = new TimeSeries("PrivateDirty", Millisecond.class);
+		this.series = new TimeSeries("all", Millisecond.class);
+		this.series2 = new TimeSeries("down", Millisecond.class);
+		this.series3 = new TimeSeries("up", Millisecond.class);
+		
 		TimeSeriesCollection dataset = new TimeSeriesCollection();
 		dataset.addSeries(this.series);
-		ChartPanel panel1 = new ChartPanel(createChart(dataset));
-		panel1.setPreferredSize(new java.awt.Dimension(500, 270));
-	
+		dataset.addSeries(this.series2);
+		dataset.addSeries(this.series3);
+
+		ChartPanel chartPanel = new ChartPanel(createChart(dataset));
+		chartPanel.setPreferredSize(new java.awt.Dimension(500, 270));
+
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-		add(panel1);
-
+		add(chartPanel);
 		add(buttonPanel, BorderLayout.SOUTH);
-	
-		
 	}
 
 	/**
@@ -81,14 +82,18 @@ public class JFSwingDynamicChart4 extends JFrame implements ActionListener {
 	private JFreeChart createChart(XYDataset dataset) {
 		//创建JFreeChart对象
 		JFreeChart result = ChartFactory.createTimeSeriesChart("", "time",
-				"%", dataset, true, false, false);
+				"", dataset, true, false, false);
 		
 		result.setBackgroundPaint(Color.white);
 		// 边框可见
 		result.setBorderVisible(true);
-		TextTitle title = new TextTitle("内存(M)时间序列图", new Font("宋体", Font.BOLD, 20));
+		TextTitle title = new TextTitle("流量(M)时间序列图", new Font("宋体", Font.BOLD, 20));
 		// 解决曲线图片标题中文乱码问题
-		result.setTitle(title);		
+		result.setTitle(title);
+		//解决图表底部中文乱码问题
+		//result.getLegend().setItemFont(new Font("宋体", Font.PLAIN, 12));
+		
+		
 		
 		//设置图表样式
 		XYPlot plot = (XYPlot) result.getPlot();
@@ -108,7 +113,7 @@ public class JFSwingDynamicChart4 extends JFrame implements ActionListener {
 		//自动设置数据轴数据范围
 		axis.setAutoRange(true);
 		//设置时间轴显示的数据
-		axis.setFixedAutoRange(60000D);
+		axis.setFixedAutoRange(10000D);
 		//数据轴固定数据范围
 		axis = plot.getRangeAxis();
 		//设置是否显示数据轴
@@ -143,6 +148,12 @@ public class JFSwingDynamicChart4 extends JFrame implements ActionListener {
 	 * @param domainAxis
 	 */
 	private static void setDomainAxis(ValueAxis domainAxis){
+//		// 解决x轴坐标上中文乱码
+//		domainAxis.setTickLabelFont(new Font("sans-serif", Font.PLAIN, 11));
+//		// 解决x轴标题中文乱码
+//		domainAxis.setLabelFont(new Font("宋体", Font.PLAIN, 14));
+		// 用于显示X轴刻度
+
 		domainAxis.setVisible(false);
 		domainAxis.setAutoTickUnitSelection(true);
 		domainAxis.setTickMarksVisible(false);
@@ -170,19 +181,24 @@ public class JFSwingDynamicChart4 extends JFrame implements ActionListener {
 	 */
 	public void dynamicRun() {
 		while (true) {
-			double men = PrintCPUAndMen.getMemoryPrivateDirty("cn.cj.pe");
 
+			String flow = PrintCPUAndMen.GetFlow("cn.cj.pe");
+
+			String s[] = flow.split("#");
+			double down = Double.parseDouble(s[0].trim())/1024;
+			double up = Double.parseDouble(s[1].trim())/1024;
+			double all = (down + up);
+			
 			DecimalFormat df = new DecimalFormat("#");
-			String memory = df.format(men/1024);
-			System.out.println(memory);
-			double factor = Double.parseDouble(memory);
-			//System.out.println("factor:" +factor);
-			this.lastValue = factor;
-			this.series.add(new Millisecond(), this.lastValue);
+
+			System.out.println("flow:" + Double.parseDouble(df.format(all)));
+			this.series.add(new Millisecond(), Double.parseDouble(df.format(all)));
+			//this.series2.add(new Millisecond(), Double.parseDouble(df.format(down)));
+			//this.series3.add(new Millisecond(), Double.parseDouble(df.format(up)));
 			
 			try {
 				Thread.currentThread();
-				Thread.sleep(500);
+				Thread.sleep(2000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -192,7 +208,7 @@ public class JFSwingDynamicChart4 extends JFrame implements ActionListener {
 	// 主函数入口
 	public static void main(String[] args) {
 	
-		JFSwingDynamicChart4 jsdChart = new JFSwingDynamicChart4();
+		JFSwingDynamicChart_flow jsdChart = new JFSwingDynamicChart_flow();
 		jsdChart.setTitle("Swing动态折线图");
 		jsdChart.createUI();
 		jsdChart.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

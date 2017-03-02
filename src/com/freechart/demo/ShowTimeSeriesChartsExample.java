@@ -28,7 +28,7 @@ import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.ui.RectangleInsets;
 
-import com.free.ui.PrintCPUAndMen;
+import com.until.info.PrintCPUAndMen;
  
 /**
  * 使用线程的方式，获取并显示CPU内存，

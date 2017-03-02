@@ -31,14 +31,16 @@ import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.ui.RectangleInsets;
 
-public class JFSwingDynamicChart2 extends JFrame implements ActionListener {
+import com.until.info.PrintCPUAndMen;
+
+public class JFSwingDynamicChart_cpu_other extends JFrame implements ActionListener {
 	private TimeSeries series;
 	private double lastValue = 0.0;
 	
 	/**
 	 * 构造
 	 */
-	public JFSwingDynamicChart2() {
+	public JFSwingDynamicChart_cpu_other() {
 		getContentPane().setBackground(Color.green);
 	}
 
