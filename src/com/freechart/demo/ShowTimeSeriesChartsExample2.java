@@ -53,10 +53,11 @@ public class ShowTimeSeriesChartsExample2 extends JFrame implements ActionListen
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private static final double MaxValue = 300.0; // 显示数据轴最大值
+	private static final double MaxValue = 350.0; // 显示数据轴最大值
 	private static final int WIGTH = 600;
 	private static final int HIGHT = 300;
 	private static boolean isRun = false;
+	DynamicResource dr  = null;
 	
 	
 	private static final double MinValue = 0.0; // 显示数据轴最小值
@@ -78,7 +79,10 @@ public class ShowTimeSeriesChartsExample2 extends JFrame implements ActionListen
 		example.setBounds(100, 100, 1250, 750);
 		example.getContentPane().add(example.createUI());
 		example.setVisible(true);
-		example.dynamicRun();
+		//example.dynamicRun();
+		
+		
+		
 	}
 
 	/**
@@ -135,7 +139,7 @@ public class ShowTimeSeriesChartsExample2 extends JFrame implements ActionListen
 		dataset3.addSeries(series3);
 //		dataset3.addSeries(series31);
 //		dataset3.addSeries(series32);
-		JFreeChart chart3 = createChart(dataset3, "流量(M)", "time", "",
+		JFreeChart chart3 = createChart(dataset3, "WIFI流量(M)", "time", "",
 				MinValue, 100);
 		panel = new JPanel();
 		ChartPanel chartPanel3 = new ChartPanel(chart3);
@@ -148,10 +152,10 @@ public class ShowTimeSeriesChartsExample2 extends JFrame implements ActionListen
 
 		
 		
-		series4 = new TimeSeries("电量", Millisecond.class);
+		series4 = new TimeSeries("上传下载流量", Millisecond.class);
 		TimeSeriesCollection dataset4 = new TimeSeriesCollection();
 		dataset4.addSeries(series4);
-		JFreeChart chart4 = createChart(dataset4, "电量(J)", "time", "", MinValue, 200);
+		JFreeChart chart4 = createChart(dataset4, "4G流量(M)", "time", "", MinValue, 200);
 		panel = new JPanel();
 		ChartPanel chartPanel4 = new ChartPanel(chart4);
 		chartPanel4.setPreferredSize(new Dimension(WIGTH, HIGHT));
@@ -202,7 +206,21 @@ public class ShowTimeSeriesChartsExample2 extends JFrame implements ActionListen
 			public void actionPerformed(ActionEvent e) {
 				if(!isRun){
 					isRun = true;
+					dr = new DynamicResource();
+					dr.start();
+				}
 					
+				System.out.println("isRun:" + isRun);
+			}
+		});
+		
+		jb2.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+				if(isRun){
+					isRun = false;
+					dr.stop();
+					dr = null;
 				}
 					
 				System.out.println("isRun:" + isRun);
@@ -212,22 +230,36 @@ public class ShowTimeSeriesChartsExample2 extends JFrame implements ActionListen
 		return mainPanel;
 	}
 
+	
+	public class DynamicResource extends Thread{
+
+		@Override
+		public void run() {
+			dynamicRun();
+		}
+	
+	}
+	
+	
 	/**
 	 * 动态运行
 	 */
 	public void dynamicRun() {
 		double cpu = 0.0;
 		double mem = 0.0;
-		double flow = 0.0;
+		double flow4G = 0.0;
+		double flowWIFI = 0.0;
 		
 		System.out.println("isRun:" + isRun);
 			while (isRun) {
 				cpu = getCPUValue();
 				mem = getMemValue();
-				flow = getFlowValue();
+				flow4G = getFlowValue4G();
+				flowWIFI = getFlowValue();
 				
-				if(cpu == -1 || mem == -1 || flow == -1){
-					JOptionPane.showMessageDialog(new JFrame(), "请检查设备是否连接！");
+				
+				if(cpu == -1 || mem == -1 || flow4G == -1|| flowWIFI == -1){
+					JOptionPane.showMessageDialog(new JFrame(), "APP是否启动，或设备是否连接！");
 					break;
 				}
 				
@@ -235,8 +267,10 @@ public class ShowTimeSeriesChartsExample2 extends JFrame implements ActionListen
 
 				series2.add(new Millisecond(), mem);
 
-				series3.add(new Millisecond(), flow);
+				series3.add(new Millisecond(), flow4G);
 
+				series4.add(new Millisecond(), flowWIFI);
+				
 				try {
 					Thread.currentThread();
 					Thread.sleep(500);
@@ -258,7 +292,28 @@ public class ShowTimeSeriesChartsExample2 extends JFrame implements ActionListen
 	 */
 	public static double getFlowValue() {
 
-		String flow = PrintCPUAndMen.GetFlow("cn.cj.pe");
+		String flow = PrintCPUAndMen.GetFlow("cn.cj.pe","rmnet_data0");
+		if(flow.equals("")){
+			return -1;
+		}
+		String s[] = flow.split("#");
+		double down = Double.parseDouble(s[0].trim())/1024;
+		double up = Double.parseDouble(s[1].trim())/1024;
+		double all = (down + up)/1024; //M
+		DecimalFormat df = new DecimalFormat("#.00");
+		System.out.println(Double.parseDouble(df.format(all)));
+		return Double.parseDouble(df.format(all));
+
+	}
+	
+	/**
+	 * 返回处理后的结果
+	 * 
+	 * @return
+	 */
+	public static double getFlowValue4G() {
+
+		String flow = PrintCPUAndMen.GetFlow("cn.cj.pe","wlan0");
 		if(flow.equals("")){
 			return -1;
 		}

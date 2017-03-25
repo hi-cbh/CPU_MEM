@@ -686,7 +686,7 @@ public class PrintCPUAndMen {
 		return str3;
 	}
 	/**
-	 * 不同手机、Wifi、4G dev都不一样；eth0,eth1;w
+	 * 不同手机、Wifi、4G dev都不一样；eth0,eth1;rmnet_data0
 	 * @param PackageName
 	 * @return
 	 */
