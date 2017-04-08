@@ -40,15 +40,14 @@ import org.jfree.ui.RectangleInsets;
 
 import com.until.info.PrintCPUAndMen;
 
-
-
 /**
  * 不使用线程的方式，获取并显示CPU内存， 在139在后台运行时，出现CPU占用率正常，但在运行时，获取的精度受到影响，导致获取进度较低
  * 
  * @author Administrator
  * 
  */
-public class ShowTimeSeriesChartsExample2 extends JFrame implements ActionListener{
+public class ShowTimeSeriesChartsExample3 extends JFrame implements
+		ActionListener {
 	/**
 	 * 
 	 */
@@ -57,9 +56,8 @@ public class ShowTimeSeriesChartsExample2 extends JFrame implements ActionListen
 	private static final int WIGTH = 600;
 	private static final int HIGHT = 300;
 	private static boolean isRun = false;
-	DynamicResource dr  = null;
-	
-	
+	DynamicResource dr = null;
+
 	private static final double MinValue = 0.0; // 显示数据轴最小值
 	private static TimeSeries series1;
 	private static TimeSeries series2;
@@ -67,22 +65,22 @@ public class ShowTimeSeriesChartsExample2 extends JFrame implements ActionListen
 	private static TimeSeries series31;
 	private static TimeSeries series32;
 	private static TimeSeries series4;
+	JLabel jlpackage = new JLabel("APK包名：");
+	final JTextField jtf1 = new JTextField(20);
 
-	public ShowTimeSeriesChartsExample2() {
+	public ShowTimeSeriesChartsExample3() {
 
 	}
 
 	public static void main(String[] args) {
-		ShowTimeSeriesChartsExample2 example = new ShowTimeSeriesChartsExample2();
+		ShowTimeSeriesChartsExample3 example = new ShowTimeSeriesChartsExample3();
 		example.setTitle("时序图");
 		example.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		example.setBounds(100, 100, 1250, 750);
 		example.getContentPane().add(example.createUI());
 		example.setVisible(true);
-		//example.dynamicRun();
-		
-		
-		
+		// example.dynamicRun();
+
 	}
 
 	/**
@@ -133,12 +131,12 @@ public class ShowTimeSeriesChartsExample2 extends JFrame implements ActionListen
 						10, 10, 10, 10), 0, 0));
 
 		series3 = new TimeSeries("上传下载流量", Millisecond.class);
-		//series31 = new TimeSeries("下载流量", Millisecond.class);
-		//series32 = new TimeSeries("上传流量", Millisecond.class);
+		// series31 = new TimeSeries("下载流量", Millisecond.class);
+		// series32 = new TimeSeries("上传流量", Millisecond.class);
 		TimeSeriesCollection dataset3 = new TimeSeriesCollection();
 		dataset3.addSeries(series3);
-//		dataset3.addSeries(series31);
-//		dataset3.addSeries(series32);
+		// dataset3.addSeries(series31);
+		// dataset3.addSeries(series32);
 		JFreeChart chart3 = createChart(dataset3, "WIFI流量(M)", "time", "",
 				MinValue, 100);
 		panel = new JPanel();
@@ -150,12 +148,11 @@ public class ShowTimeSeriesChartsExample2 extends JFrame implements ActionListen
 				GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(
 						10, 10, 10, 10), 0, 0));
 
-		
-		
 		series4 = new TimeSeries("上传下载流量", Millisecond.class);
 		TimeSeriesCollection dataset4 = new TimeSeriesCollection();
 		dataset4.addSeries(series4);
-		JFreeChart chart4 = createChart(dataset4, "4G流量(M)", "time", "", MinValue, 200);
+		JFreeChart chart4 = createChart(dataset4, "4G流量(M)", "time", "",
+				MinValue, 200);
 		panel = new JPanel();
 		ChartPanel chartPanel4 = new ChartPanel(chart4);
 		chartPanel4.setPreferredSize(new Dimension(WIGTH, HIGHT));
@@ -177,21 +174,19 @@ public class ShowTimeSeriesChartsExample2 extends JFrame implements ActionListen
 		 */
 
 		JPanel jp = new JPanel();
-		
-		JLabel jlpackage = new JLabel("APK包名：");
-		jlpackage.setFont(new Font("宋体",Font.BOLD, 20));
-		
-		JTextField jtf1 = new JTextField(20);
-		jtf1.setFont(new Font("宋体",Font.BOLD, 16));
-		jtf1.setBounds(10,10,50,15);
-		
-	
+
+		jlpackage.setFont(new Font("宋体", Font.BOLD, 20));
+
+		// 包名输入框
+		jtf1.setFont(new Font("宋体", Font.BOLD, 16));
+		jtf1.setBounds(10, 10, 50, 15);
+
 		JButton jb = new JButton(" 开始 ");
-		jb.setFont(new Font("宋体",Font.BOLD, 18));
-		
+		jb.setFont(new Font("宋体", Font.BOLD, 18));
+
 		JButton jb2 = new JButton(" 停止 ");
-		jb2.setFont(new Font("宋体",Font.BOLD, 18));
-		
+		jb2.setFont(new Font("宋体", Font.BOLD, 18));
+
 		jp.add(jlpackage);
 		jp.add(jtf1);
 		jp.add(jb);
@@ -200,47 +195,49 @@ public class ShowTimeSeriesChartsExample2 extends JFrame implements ActionListen
 		mainPanel.add(jp);
 		jtf1.setText("cn.cj.pe");
 		jtf1.setEditable(true);
-		
+
 		jb.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-				if(!isRun){
+				if (jtf1.getText().equals("")) {
+
+				}
+
+				if (!isRun) {
 					isRun = true;
 					dr = new DynamicResource();
 					dr.start();
 				}
-					
+				System.out.println("currentakg:" + jtf1.getText());
 				System.out.println("isRun:" + isRun);
 			}
 		});
-		
+
 		jb2.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-				if(isRun){
+				if (isRun) {
 					isRun = false;
 					dr.stop();
 					dr = null;
 				}
-					
+
 				System.out.println("isRun:" + isRun);
 			}
 		});
-		
+
 		return mainPanel;
 	}
 
-	
-	public class DynamicResource extends Thread{
+	public class DynamicResource extends Thread {
 
 		@Override
 		public void run() {
 			dynamicRun();
 		}
-	
+
 	}
-	
-	
+
 	/**
 	 * 动态运行
 	 */
@@ -249,42 +246,45 @@ public class ShowTimeSeriesChartsExample2 extends JFrame implements ActionListen
 		double mem = 0.0;
 		double flow4G = 0.0;
 		double flowWIFI = 0.0;
-		
-		System.out.println("isRun:" + isRun);
-			while (isRun) {
-				cpu = getCPUValue();
-				mem = getMemValue();
-				//flow4G = getFlowValue4G();
-				flowWIFI = getFlowValue();
-				
-				
-				if(cpu == -1 || mem == -1 || flow4G == -1|| flowWIFI == -1){
-					JOptionPane.showMessageDialog(new JFrame(), "APP是否启动，或设备是否连接！");
-					break;
-				}
-				
-				series1.add(new Millisecond(), cpu);
 
-				series2.add(new Millisecond(), mem);
-//
-//				//series3.add(new Millisecond(), flow4G);
-//
-//				series4.add(new Millisecond(), flowWIFI);
-				
-				try {
-					Thread.currentThread();
-					Thread.sleep(500);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
+		System.out.println("isRun:" + isRun);
+
+		String pkg = jtf1.getText();
+
+		if (pkg.equals("")) {
+			JOptionPane.showMessageDialog(new JFrame(), "包名不能为空！");
+			return;
+		}
+
+		while (isRun) {
+			cpu = getCPUValue(pkg);
+			mem = getMemValue(pkg);
+			// flow4G = getFlowValue4G();
+			flowWIFI = getFlowValue(pkg,"wlan0");
+
+			if (cpu == -1 || mem == -1 || flow4G == -1 || flowWIFI == -1) {
+				JOptionPane.showMessageDialog(new JFrame(), "APP是否启动，或设备是否连接！");
+				break;
 			}
 
-		
-		
+			series1.add(new Millisecond(), cpu);
+
+			series2.add(new Millisecond(), mem);
+			//
+			// //series3.add(new Millisecond(), flow4G);
+			//
+			series4.add(new Millisecond(), flowWIFI);
+
+			try {
+				Thread.currentThread();
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
 
 	}
 
-	
 	/**
 	 * 返回处理后的结果
 	 * 
@@ -292,20 +292,20 @@ public class ShowTimeSeriesChartsExample2 extends JFrame implements ActionListen
 	 */
 	public static double getFlowValue() {
 
-		String flow = PrintCPUAndMen.GetFlow("cn.cj.pe","rmnet_data0");
-		if(flow.equals("")){
+		String flow = PrintCPUAndMen.GetFlow("cn.cj.pe", "rmnet_data0");
+		if (flow.equals("")) {
 			return -1;
 		}
 		String s[] = flow.split("#");
-		double down = Double.parseDouble(s[0].trim())/1024;
-		double up = Double.parseDouble(s[1].trim())/1024;
-		double all = (down + up)/1024; //M
+		double down = Double.parseDouble(s[0].trim()) / 1024;
+		double up = Double.parseDouble(s[1].trim()) / 1024;
+		double all = (down + up) / 1024; // M
 		DecimalFormat df = new DecimalFormat("#.00");
 		System.out.println(Double.parseDouble(df.format(all)));
 		return Double.parseDouble(df.format(all));
 
 	}
-	
+
 	/**
 	 * 返回处理后的结果
 	 * 
@@ -313,20 +313,41 @@ public class ShowTimeSeriesChartsExample2 extends JFrame implements ActionListen
 	 */
 	public static double getFlowValue4G() {
 
-		String flow = PrintCPUAndMen.GetFlow("cn.cj.pe","wlan0");
-		if(flow.equals("")){
+		String flow = PrintCPUAndMen.GetFlow("cn.cj.pe", "wlan0");
+		if (flow.equals("")) {
 			return -1;
 		}
 		String s[] = flow.split("#");
-		double down = Double.parseDouble(s[0].trim())/1024;
-		double up = Double.parseDouble(s[1].trim())/1024;
-		double all = (down + up)/1024; //M
+		double down = Double.parseDouble(s[0].trim()) / 1024;
+		double up = Double.parseDouble(s[1].trim()) / 1024;
+		double all = (down + up) / 1024; // M
 		DecimalFormat df = new DecimalFormat("#.00");
 		System.out.println(Double.parseDouble(df.format(all)));
 		return Double.parseDouble(df.format(all));
 
 	}
-	
+
+	/**
+	 * 返回处理后的结果
+	 * 
+	 * @return
+	 */
+	public static double getFlowValue(String pkg, String wlan) {
+
+		String flow = PrintCPUAndMen.GetFlow(pkg, wlan);
+		if (flow.equals("")) {
+			return -1;
+		}
+		String s[] = flow.split("#");
+		double down = Double.parseDouble(s[0].trim()) / 1024;
+		double up = Double.parseDouble(s[1].trim()) / 1024;
+		double all = (down + up) / 1024; // M
+		DecimalFormat df = new DecimalFormat("#.00");
+		System.out.println(Double.parseDouble(df.format(all)));
+		return Double.parseDouble(df.format(all));
+
+	}
+
 	/**
 	 * 返回处理后的结果
 	 * 
@@ -334,7 +355,23 @@ public class ShowTimeSeriesChartsExample2 extends JFrame implements ActionListen
 	 */
 	public static double getCPUValue() {
 		String cpu = PrintCPUAndMen.getCPU("cn.cj.pe");
-		if(!cpu.contains("%")){
+		if (!cpu.contains("%")) {
+			return -1;
+		}
+		String s[] = cpu.split("%");
+		System.out.println("getCPUValue:" + Double.parseDouble(s[0]));
+		return Double.parseDouble(s[0]);
+
+	}
+
+	/**
+	 * 返回处理后的结果
+	 * 
+	 * @return
+	 */
+	public static double getCPUValue(String pkg) {
+		String cpu = PrintCPUAndMen.getCPU(pkg);
+		if (!cpu.contains("%")) {
 			return -1;
 		}
 		String s[] = cpu.split("%");
@@ -351,11 +388,29 @@ public class ShowTimeSeriesChartsExample2 extends JFrame implements ActionListen
 	public static double getMemValue() {
 		DecimalFormat df = new DecimalFormat("#");
 		double mem = PrintCPUAndMen.getMemoryPrivateDirty("cn.cj.pe");
-		if(mem == -1){
+		if (mem == -1) {
 			return -1;
 		}
 		mem = mem / 1024;
-		
+
+		String memory = df.format(mem);
+		System.out.println("getMemValue:" + Double.parseDouble(memory));
+		return Double.parseDouble(memory);
+	}
+
+	/**
+	 * 返回处理后的结果
+	 * 
+	 * @return
+	 */
+	public static double getMemValue(String pkg) {
+		DecimalFormat df = new DecimalFormat("#");
+		double mem = PrintCPUAndMen.getMemoryPrivateDirty(pkg);
+		if (mem == -1) {
+			return -1;
+		}
+		mem = mem / 1024;
+
 		String memory = df.format(mem);
 		System.out.println("getMemValue:" + Double.parseDouble(memory));
 		return Double.parseDouble(memory);
@@ -457,7 +512,7 @@ public class ShowTimeSeriesChartsExample2 extends JFrame implements ActionListen
 
 	public void actionPerformed(ActionEvent arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

@@ -181,8 +181,8 @@ public class JFSwingDynamicChart_flow extends JFrame implements ActionListener {
 	 */
 	public void dynamicRun() {
 		while (true) {
-
-			String flow = PrintCPUAndMen.GetFlow("cn.cj.pe","rmnet_data0");
+//rmnet_data0
+			String flow = PrintCPUAndMen.GetFlow("cn.cj.pe","wlan0");
 
 			String s[] = flow.split("#");
 			double down = Double.parseDouble(s[0].trim())/1024;
